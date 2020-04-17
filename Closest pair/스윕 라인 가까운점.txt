@@ -1,0 +1,68 @@
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <set>
+#include <cmath>
+using namespace std;
+
+struct Point {
+	int x, y;
+
+	Point() {}
+	Point(int x, int y) :x(x), y(y) {}
+
+	bool operator<(const Point& p) const {
+		if (y == p.y)return x < p.x;
+		return y < p.y;
+	}
+
+	bool operator==(const Point& p) const {
+		return x == p.x && y == p.y;//같으면 1, 다르면 0
+	}
+};
+
+bool Comp(const Point& a, const Point& b) {
+	return a.x < b.x;//a.x가 더 크면 0, b.x가 더 크면 1
+}
+
+inline double Distance(Point a, Point b){
+	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
+}
+
+int main() {
+	int n, x, y;
+	scanf("%d", &n);
+
+	vector<Point> p;
+
+	for (int i = 0; i < n; i++) {
+		scanf("%d, %d", &x, &y);
+		p.push_back(Point(x, y));
+	}
+	sort(p.begin(), p.end(), Comp);
+
+	set<Point> s;
+	s.insert(p[0]);
+	s.insert(p[1]);
+
+	double res = Distance(p[0], p[1]), start = 0;
+
+	for (int i = 2; i < n; i++) {
+		while (start < i) {
+			if (sqrt((p[i].x - p[start].x) * (p[i].x - p[start].x)) > res)
+				s.erase(p[start++]);
+			else break;
+		}
+		double d = res;
+		auto low = s.lower_bound(Point(-10000, p[i].y - d));
+		auto high = s.upper_bound(Point(10000, p[i].y + d));
+
+		for (auto iter = low; iter != high; iter++)
+			res = min(res, Distance(p[i], *iter));
+
+		s.insert(p[i]);
+	}
+
+	printf("%0.6lf", res);
+}
