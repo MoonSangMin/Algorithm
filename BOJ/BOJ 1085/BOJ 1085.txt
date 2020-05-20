@@ -1,0 +1,16 @@
+1. x축이랑 제일 가까운경우
+2. y축이랑 제일 가까운경우
+3. 주어진 점 x=w와 제일 가까운 경우
+4. 주어진 점 y=z와 제일 가까운 경우
+
+(0,0)
+(x,y)  (3,1)
+(w,z)  (5,3)
+
+xClosest = ((w-x)>x)? x : w-x
+yClosest = ((z-y)>y)? y : z-y
+
+if(xClosest > yClosest)
+	ans = yClosest
+else
+	vice versa
