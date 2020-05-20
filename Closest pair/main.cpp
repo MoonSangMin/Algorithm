@@ -1,0 +1,67 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <set>
+#include <cmath>
+using namespace std;
+
+struct Point {
+	double x, y;
+};
+
+inline double Distance(Point& p, Point& q) {
+	return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+}
+
+struct Comp {
+	bool cmp;
+	Comp(bool b):cmp(b){}
+	bool operator()(Point& p, Point& q) {
+		return (this->cmp ? p.x < q.x : p.y < q.y);
+	}
+};
+
+double ClosestPair(vector<Point>::iterator it, int n) {
+	if (n == 2)
+		return Distance(it[0], it[1]);
+	if (n == 3)
+		return min({Distance(it[0], it[1]), Distance(it[1], it[2]), Distance(it[2], it[0]) });
+
+	double line = it[n / 2 - 1].x + it[n / 2].x / 2;
+	double d = min(ClosestPair(it, n / 2), ClosestPair(it + n / 2, n - n / 2));
+
+	vector<Point> mid;
+	mid.reserve(n);
+
+	for (int i = 0; i < n; i++) {
+		double t = line - it[i].x;
+		if (t < d)
+			mid.push_back(it[i]);
+	}
+
+	sort(mid.begin(), mid.end(), Comp(false));
+
+	double midSize = mid.size();
+	for (int i = 0; i < midSize - 1; i++)
+		for (int j = i + 1; j < midSize && sqrt((mid[j].y - mid[i].y) * (mid[j].y - mid[i].y)) < d; j++)
+			d = min(d, Distance(mid[i], mid[j]));
+
+	return d;
+}
+
+int main() {
+	int n;
+	scanf_s("%d", &n);
+
+	vector<Point> points(n);
+	for (auto it = points.begin(); it != points.end(); it++)
+		scanf_s("%lf, %lf", &it->x, &it->y);
+
+	sort(points.begin(), points.end(), Comp(true));
+
+	printf("%.6lf", ClosestPair(points.begin(), n));
+
+	return 0;
+}
