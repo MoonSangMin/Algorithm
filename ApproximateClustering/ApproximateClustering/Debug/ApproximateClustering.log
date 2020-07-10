@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\PC\Desktop\대학 자료\3학년 1학기\알고리즘\ApproximateClustering\ApproximateClustering\main.cpp(49): warning C4244: '인수': 'double'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  ApproximateClustering.vcxproj -> C:\Users\PC\Desktop\대학 자료\3학년 1학기\알고리즘\ApproximateClustering\Debug\ApproximateClustering.exe
