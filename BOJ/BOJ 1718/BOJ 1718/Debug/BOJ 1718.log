@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Users\samsung\Desktop\대학자료\C++\BOJ 1718\BOJ 1718\main.cpp(13,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\samsung\Desktop\대학자료\C++\BOJ 1718\BOJ 1718\main.cpp(20,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  BOJ 1718.vcxproj -> C:\Users\samsung\Desktop\대학자료\C++\BOJ 1718\Debug\BOJ 1718.exe
