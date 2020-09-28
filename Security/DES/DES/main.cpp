@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <fstream>
 using namespace std;
 string round_keys[16];
 string pt;
@@ -270,13 +271,8 @@ string DES() {
 	return ciphertext;
 }
 
-string sevbits[] = {
-	"0000000","0000001","0000010","0000011","0000100","0000101","0000110","0000111","0001000","0001001","0001010","0001011","0001100","0001101","0001110","0001111","0010000","0010001","0010010"
-,"0010011","0010100","0010101","0010110","0010111","0011000","0011001","0011010","0011011","0011100","0011101","0011110","0011111","0100000","0100001","0100010","0100011","0100100","0100101","0100110","0100111","0101000","0101001","0101010","0101011"
-,"0101100","0101101","0101110","0101111","0110000","0110001","0110010","0110011","0110100","0110101","0110110","0110111","0111000","0111001","0111010","0111011","0111100", "0111101","0111110","0111111","1000000"
-,"1000001","1000010","1000011","1000100","1000101","1000110","1000111","1001000","1001001","1001010","1001011","1001100","1001101","1001110","1001111","1010000","1010001","1010010","1010011","1010100","1010101","1010110"
-,"1010111","1011000","1011001","1011010","1011011","1011100","1011101","1011110","1011111","1100000","1100001","1100010","1100011","1100100","1100101","1100110","1100111","1101000","1101001","1101010"
-,"1101011","1101100","1101101","1101110","1101111","1110000","1110001","1110010","1110011","1110100","1110101","1110110","1110111","1111000","1111001","1111010","1111011","1111100","1111101","1111110","1111111"
+string thrbits[8] = {
+	"000", "001", "010", "011", "100", "101", "110", "111"
 };
 
 int main() {
@@ -290,37 +286,52 @@ int main() {
 	cout << "Plain text: " << pt << endl;
 	//암호문 생성 */
 	//string ct = DES();
-	for (int T = 1; T < 8; T += 2) {
-		//for (int C = 0; C <= 6; C++) {
-			for (int S = 0; S < 128; S++) {
-				string key = "0010001000000000000110000000000000000110000000000000001100000000";
-				key.replace(T * 8, 7, sevbits[S]);
-				cout << "키 : " << key << '\n';
-				generate_keys(key);
-				string ct = "0011110100000101010001101011110000001000011100011010101011111011";
-				cout << "Ciphertext: " << ct << endl;
-				//복호화를 위해 라운드 키를 역으로
-				int i = 15;
-				int j = 0;
-				while (i > j)
-				{
-					string temp = round_keys[i];
-					round_keys[i] = round_keys[j];
-					round_keys[j] = temp;
-					i--;
-					j++;
-				}
-				pt = ct;
-				string decrypted = DES();
-				cout << "이진수 : " << decrypted << '\n';
-				for (int i = 0; i < 8; i++) {
-					cout << (char)convertBinaryToDecimal(decrypted.substr(i * 8, 8)) << '\n';
+	string ct = "0011110100000101010001101011110000001000011100011010101011111011";
+	string ct2 = "0101101100101110010011011110111110001010001111110111001111011011";
+	FILE* f = fopen("bruteforce.txt", "w");
+	for (int T = 0; T < 8; T++) {
+		string key = "0010001000100000000110000100000000000110010100000000001101110000";
+		key.replace(12, 3, thrbits[T]);
+		for (int U = 0; U < 8; U++) {
+			key.replace(28, 3, thrbits[U]);
+			for (int V = 0; V < 8; V++) {
+				key.replace(44, 3, thrbits[V]);
+				for (int S = 0; S < 8; S++) {
+					key.replace(60, 3, thrbits[S]);
+					generate_keys(key);
+					//복호화를 위해 라운드 키를 역으로
+					int i = 15;
+					int j = 0;
+					while (i > j)
+					{
+						string temp = round_keys[i];
+						round_keys[i] = round_keys[j];
+						round_keys[j] = temp;
+						i--;
+						j++;
+					}
+					pt = ct;
+					string decrypted = DES();
+					pt = ct2;
+					string decrypted2 = DES();
+					string ans;
+					for (int i = 0; i < 8; i++) {
+						if (convertBinaryToDecimal(decrypted.substr(i * 8, 8)) == 0 || ((convertBinaryToDecimal(decrypted.substr(i * 8, 8)) >= 32 && convertBinaryToDecimal(decrypted.substr(i * 8, 8)) < 127))) {
+							ans+=(char)convertBinaryToDecimal(decrypted.substr(i * 8, 8));
+						}
+					}
+					for (int i = 0; i < 8; i++) {
+						if (convertBinaryToDecimal(decrypted2.substr(i * 8, 8)) == 0 || ((convertBinaryToDecimal(decrypted2.substr(i * 8, 8)) >= 32 && convertBinaryToDecimal(decrypted2.substr(i * 8, 8)) < 127))) {
+							ans+=(char)convertBinaryToDecimal(decrypted2.substr(i * 8, 8));
+						}
+					}
+					if (ans.size() == 16) {
+						fprintf(f, "키 : %s\n", key.c_str());
+						fprintf(f, "이진수 : %s%s\n", decrypted.c_str(), decrypted2.c_str());
+						fprintf(f, "%s\n", ans.c_str());
+					}
 				}
 			}
-		//}
+		}
 	}
-	//평문과 복호화된 암호문을 비교
-	/*if (decrypted == apt) {
-		cout << "Plain text encrypted and decrypted successfully." << endl;
-	}*/
 }
