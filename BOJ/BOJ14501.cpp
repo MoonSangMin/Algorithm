@@ -4,7 +4,8 @@
 #include <utility>
 using namespace std;
 
-int DP[16];
+int DP[16] = { 0, };
+pair<int, int> v[16] = { {0, 0}, };
 
 int main(){
     ios_base::sync_with_stdio(false);
@@ -13,9 +14,6 @@ int main(){
     int n;
     cin >> n;
 
-    vector<pair<int, int> > v(n + 1);
-    v[0].first = 0; v[0].second = 0;
-
     for(int i=1; i<=n; i++){
         int day, cost;
         cin >> day >> cost;
@@ -23,14 +21,12 @@ int main(){
         v[i].second = cost;
     }
 
-    DP[0] = 0;
-    for(int i=1; i<=n+1; i++){
-        for(int j=1; j<=i; j++){
-            if(i - j >= v[j].first) {
-                DP[i] = max(v[j].second + DP[j], DP[i]);
-            }
-        }
+    for(int i=n; i>0; i--){
+        if(i + v[i].first > n+1) DP[i] = DP[i+1];
+        else DP[i] = max(DP[i+1], DP[i + v[i].first] + v[i].second);
+
+        cout << DP[i] << '\n';
     }
 
-    cout << DP[n+1];
+    cout << DP[1];
 }
